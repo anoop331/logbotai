@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log bot ai</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        h3 {
+            text-align: center;
+            color: #333;
+            padding: 20px 0;
+            margin: 0;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #eee;
+        }
+        .upload-form {
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .upload-form .left-group,
+        .upload-form .right-group {
+            display: flex;
+            align-items: center;
+        }
+        .upload-form .right-group {
+            margin-left: 10px;
+        }
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            list-style-type: none;
+            margin: 0;
+        }
+        .chat-form {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        .chat-form input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .chat-form button,
+        .upload-form button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .chat-form button:hover,
+        .upload-form button:hover {
+            background-color: #45a049;
+        }
+
+        .chat-form button:active,
+        .upload-form button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .upload-form input[type="file"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+        }
+        .user-message {
+            background-color: #e6f2ff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .ai-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+        .message-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .message-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .message-header i {
+            margin-right: 5px;
+        }
+        .user-message .message-header {
+            color: #0066cc;
+        }
+        .ai-message .message-header {
+            color: #4a4a4a;
+        }
+        #clearChat {
+            margin-top: 10px;
+            background-color: #f44336;
+        }
+
+        #clearChat:hover {
+            background-color: #d32f2f;
+        }
+        #newChat {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #newChat:hover {
+            background-color: #2980b9;
+        }
+
+        #newChat:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+    <script>
+        var ws = new WebSocket("ws://logbotai.nenosys.se:8000/ws");
+        ws.onmessage = function(event) {
+            var messages = document.getElementById('messages');
+            var message = document.createElement('li');
+            message.className = 'message ai-message';
+            
+            var messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+           
+           
+            
+            var content = document.createElement('div');
+            content.textContent = event.data;
+            messageContent.appendChild(content);
+            
+            message.appendChild(messageContent);
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+        };
+        function sendMessage(event) {
+            event.preventDefault();
+            var input = document.getElementById("messageText");
+            var message = input.value;
+            if (message.trim() !== '') {
+                displayUserMessage(message);
+                ws.send(message);
+                input.value = '';
+            }
+        }
+        function displayUserMessage(message) {
+            var messages = document.getElementById('messages');
+            var messageElement = document.createElement('li');
+            messageElement.className = 'message user-message';
+            
+            var messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            
+            var content = document.createElement('div');
+            content.textContent = message;
+            messageContent.appendChild(content);
+            
+            messageElement.appendChild(messageContent);
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function uploadFiles(event) {
+            event.preventDefault();
+            var formData = new FormData(event.target);
+            
+            fetch('/upload/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log(result);
+                // Optionally, you can display a message to the user
+                alert('Files uploaded successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading files.');
+            });
+        }
+
+        function clearChat() {
+            var messages = document.getElementById('messages');
+            messages.innerHTML = '';
+            
+            // Send a message to the server to clear the session
+            ws.send('CLEAR_SESSION');
+            
+            console.log('Chat cleared and new session started');
+        }
+
+        function startNewChat() {
+            var messages = document.getElementById('messages');
+            messages.innerHTML = '';
+            
+            // Send a message to the server to clear the session
+            ws.send('NEW_SESSION');
+            
+            console.log('New chat session started');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h3>Chat with log bot ai</h3>
+        <form class="upload-form" onsubmit="uploadFiles(event)">
+            <div class="left-group">
+                <input name="files" type="file" multiple>
+                <button type="submit">Upload</button>
+            </div>
+            <div class="right-group">
+                <button type="button" id="newChat" onclick="startNewChat()">New Chat</button>
+            </div>
+        </form>
+        <div class="chat-container">
+            <ul id='messages' class="chat-messages">
+            </ul>
+            <form class="chat-form" onsubmit="sendMessage(event)">
+                <input type="text" id="messageText" autocomplete="off" placeholder="Type your message..."/>
+                <button>Send</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

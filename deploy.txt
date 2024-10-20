@@ -1,0 +1,8 @@
+
+
+az login
+
+az acr login --name nenosys
+az container delete --resource-group neno-ai-sweden-central --name logbotai
+az container create   --resource-group neno-ai-sweden-central   --name logbotai   --image nenosys.azurecr.io/logbotai   --ports 8000   --ip-address Public --cpu 2 --memory 4
+az acr credential show --name nenosys
