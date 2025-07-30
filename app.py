@@ -13,7 +13,7 @@ from langchain.retrievers import MultiQueryRetriever
 import json
 
 
-os.environ["OPENAI_API_KEY"] = "your api key"
+#os.environ["OPENAI_API_KEY"] = "your api key"
 app = FastAPI()
 
 embeddings = OpenAIEmbeddings()
